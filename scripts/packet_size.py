@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # plot all packets cdf
     ######################################################################
 
-    plot all packets cdf
+    # plot all packets cdf
     plt.figure(1)
     sorted_list = np.sort(all_size)
     p = 1. * np.arange(len(all_size)) / (len(all_size) - 1)
