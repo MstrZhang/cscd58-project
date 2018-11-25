@@ -1,13 +1,5 @@
 import csv
 
-mapping = {
-    'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'LPD', 'CVSPSERVER', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
-    'TRANSPORT': ['TCP', 'UDP', 'NBSS', 'Syslog'],
-    'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'VRRP', 'RSL', 'ESP', 'GRE'],
-    'LINK': ['ARP', 'CDP', 'LLC', 'PPTP'],
-    'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
-}
-
 def ip_to_int(address):
     split_address = address.split('.')
     total = 0
@@ -37,8 +29,8 @@ if __name__ == '__main__':
                 src_port = split_info[0]
                 dest_port = split_info[1].split(' ')[0]
 
-            # Build a flow identifier from src/dest ips
-            ident = ip_to_int(source) + ip_to_int(destination) + int(src_port) + int(dest_port)
+            # build a flow identifier from src/dest ips
+            ident = '{src_ip}:{src_port},{dst_ip}:{dst_port}'.format(src_ip=source, src_port=src_port, dst_ip=destination, dst_port=dest_port)
             if not ident in flows:
                 flows[ident] = {'protocol' : protocol}
 
