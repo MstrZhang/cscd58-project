@@ -2,14 +2,6 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-mapping = {
-    'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'LPD', 'CVSPSERVER', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
-    'TRANSPORT': ['TCP', 'UDP', 'NBSS', 'Syslog'],
-    'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'VRRP', 'RSL', 'ESP', 'GRE'],
-    'LINK': ['ARP', 'CDP', 'LLC', 'PPTP'],
-    'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
-}
-
 def ip_to_int(address):
     split_address = address.split('.')
     total = 0
@@ -70,18 +62,25 @@ if __name__ == '__main__':
     sorted_list = np.sort(packet_arrival_set)
     p = 1. * np.arange(len(packet_arrival_set)) / (len(packet_arrival_set) - 1)
     plt.plot(sorted_list, p)
-    plt.title('all flows')
+    plt.xscale('log')
+    plt.title('packet interpacket arrival time')
 
     # plot tcp packets cdf
     plt.figure(2)
     tcp_list = np.sort(TCP_arrival_set)
     p = 1. * np.arange(len(TCP_arrival_set)) / (len(TCP_arrival_set) - 1)
     plt.plot(tcp_list, p)
-    plt.title('tcp flows')
+    plt.xscale('log')
+    plt.title('tcp interpacket arrival time')
 
     # plot udp packets cdf
     plt.figure(3)
     udp_list = np.sort(UDP_arrival_set)
     p = 1. * np.arange(len(UDP_arrival_set)) / (len(UDP_arrival_set) - 1)
     plt.plot(udp_list, p)
-    plt.title('udp flows')
+    plt.xscale('log')
+    plt.title('udp interpacket arrival time')
+
+
+    # show graphs
+    plt.show()
