@@ -12,7 +12,7 @@ def ip_to_int(address):
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark -- tcp and ip header lengths specifically extracted from wireshark)
-    with open('../raw/state_dump.csv', 'rb') as f:
+    with open('../raw/tcp_state_dump.csv', 'rb') as f:
         data = list(csv.reader(f))[1:]
 
     flows = {}
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         request_count += value['request']
         other_count += value['other']
 
-    print(reset_count)
-    print(fin_count)
-    print(request_count)
-    print(other_count)
+    print('reset count: ' + str(reset_count))
+    print('fin count: ' + str(fin_count))
+    print('request count: ' + str(request_count))
+    print('other count: ' + str(other_count))
