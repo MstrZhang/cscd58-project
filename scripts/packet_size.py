@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 mapping = {
-    'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'CVSPSERVER', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
+    'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'CVSPSERVER', 'LPD', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
     'TRANSPORT': ['TCP', 'UDP', 'NBSS', 'Syslog'],
-    'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'LPD', 'VRRP', 'RSL', 'ESP', 'GRE'],
+    'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'VRRP', 'RSL', 'ESP', 'GRE'],
     'LINK': ['ARP', 'CDP', 'LLC', 'PPTP'],
     'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
 }
@@ -30,17 +30,17 @@ if __name__ == '__main__':
 
         # collect TCP lengths
         if protocol == 'TCP':
-            tcp.append(length)
+            tcp.append(int(length))
         # collect UDP lengths
         elif protocol == 'UDP':
-            udp.append(length)
+            udp.append(int(length))
 
     # collect values
     all_size = [x for x in protocols.values()]
 
     # debug
     # print(all_size)
-    print(tcp)
+    # print(tcp)
     # print(udp)
 
     ######################################################################
