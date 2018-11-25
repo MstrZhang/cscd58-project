@@ -13,7 +13,7 @@ mapping = {
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark)
-    with open('univ1_trace.csv', 'rb') as f:
+    with open('../raw/univ1_trace.csv', 'rb') as f:
         data = list(csv.reader(f))[1:]
 
     protocols = {}
