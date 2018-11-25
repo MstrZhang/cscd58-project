@@ -13,6 +13,12 @@ Add all of these files to `/raw` and change locations in scripts as necessary
 - `univ1_trace.csv`
     - from wireshark:  `File > Export Packet Dissections > As CSV`
     - save file as `univ1_trace.csv`
+- `new_dump.csv`
+    - from wireshark, right click on the columns tab
+        - click `Configure Columns`
+            - add two new columns named `TCP Header` and `IP Header`
+            - set the fields to be `tcp.hdr_len` and `ip.hdr_len` respectively
+    - extract the `.csv` file the same way as above
 - `univ1_pt5.pcap`
     - extract the original tar
     - take `univ1_pt5`
