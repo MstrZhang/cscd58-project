@@ -10,14 +10,6 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 
-mapping = {
-    'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'CVSPSERVER', 'LPD', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
-    'TRANSPORT': ['TCP', 'UDP', 'NBSS', 'Syslog'],
-    'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'VRRP', 'RSL', 'ESP', 'GRE'],
-    'LINK': ['ARP', 'CDP', 'LLC', 'PPTP'],
-    'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
-}
-
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark)
@@ -25,118 +17,116 @@ if __name__ == '__main__':
         data = list(csv.reader(f))[1:]
 
     # full packet size
-    protocols = {}
+    all_size = []
     tcp = []
     udp = []
     ip = []
     non_ip = []
 
     # header size
+    # TODO: header calculation is probably not exactly correct
     tcp_header = []
     udp_header = []
     ip_header = []
 
     # collect all packet lengths
     for no, time, source, destination, protocol, length, info in data:
-        if not protocol in protocols:
-            protocols[protocol] = int(length)
-        else:
-            protocols[protocol] += int(length)
+        # collect all lengths
+        all_size.append(int(length))
 
         # collect TCP lengths
         if protocol == 'TCP':
             tcp.append(int(length))
-            match = re.search(r'Len=(\d*)', info)
-            if match:
-                tcp_header.append(int(match.group(0).split('=')[1]))
-        # collect UDP lengths
-        elif protocol == 'UDP':
-            udp.append(int(length))
-            match = re.search(r'Len=(\d*)', info)
-            if match:
-                udp_header.append(int(match.group(0).split('=')[1]))
-        # collect IP lengths
-        elif protocol == 'IPv4':
             ip.append(int(length))
             match = re.search(r'Len=(\d*)', info)
             if match:
+                tcp_header.append(int(match.group(0).split('=')[1]))
+                ip_header.append(int(match.group(0).split('=')[1]))
+        # collect UDP lengths
+        elif protocol == 'UDP':
+            udp.append(int(length))
+            ip.append(int(length))
+            match = re.search(r'Len=(\d*)', info)
+            if match:
+                udp_header.append(int(match.group(0).split('=')[1]))
                 ip_header.append(int(match.group(0).split('=')[1]))
         # collect non-IP lengths:
         else:
             non_ip.append(int(length))
 
-    # collect values
-    all_size = [x for x in protocols.values()]
 
     ######################################################################
     # plot all packets cdf
     ######################################################################
 
     # plot all packets cdf
-    # sorted_list = np.sort(all_size)
-    # p = 1. * np.arange(len(all_size)) / (len(all_size) - 1)
-    # plt.plot(sorted_list, p)
-    # plt.xscale('log')
-    # plt.title('all packets')
-    # plt.show()
+    plt.figure(1)
+    sorted_list = np.sort(all_size)
+    p = 1. * np.arange(len(all_size)) / (len(all_size) - 1)
+    plt.plot(sorted_list, p)
+    plt.xscale('log')
+    plt.title('all packets')
 
     # plot tcp packets cdf
-    # sorted_list = np.sort(tcp)
-    # p = 1. * np.arange(len(tcp)) / (len(tcp) - 1)
-    # plt.plot(sorted_list, p)
-    # plt.xscale('log')
-    # plt.title('tcp packets')
-    # plt.show()
+    plt.figure(2)
+    tcp_list = np.sort(tcp)
+    p = 1. * np.arange(len(tcp)) / (len(tcp) - 1)
+    plt.plot(tcp_list, p)
+    plt.xscale('log')
+    plt.title('tcp packets')
 
     # plot udp packets cdf
-    # sorted_list = np.sort(udp)
-    # p = 1. * np.arange(len(udp)) / (len(udp) - 1)
-    # plt.plot(sorted_list, p)
-    # plt.xscale('log')
-    # plt.title('udp packets')
-    # plt.show()
+    plt.figure(3)
+    udp_list = np.sort(udp)
+    p = 1. * np.arange(len(udp)) / (len(udp) - 1)
+    plt.plot(udp_list, p)
+    plt.xscale('log')
+    plt.title('udp packets')
 
     # plot ip packets cdf
-    # sorted_list = np.sort(ip)
-    # p = 1. * np.arange(len(ip)) / (len(ip) - 1)
-    # plt.plot(sorted_list, p)
-    # plt.xscale('log')
-    # plt.title('ip packets')
-    # plt.show()
+    plt.figure(4)
+    sorted_list = np.sort(ip)
+    p = 1. * np.arange(len(ip)) / (len(ip) - 1)
+    plt.plot(sorted_list, p)
+    plt.xscale('log')
+    plt.title('ip packets')
 
     # plot non-ip packets cdf
-    # sorted_list = np.sort(non_ip)
-    # p = 1. * np.arange(len(non_ip)) / (len(non_ip) - 1)
-    # plt.plot(sorted_list, p)
-    # plt.xscale('log')
-    # plt.title('non ip packets')
-    # plt.show()
+    plt.figure(5)
+    sorted_list = np.sort(non_ip)
+    p = 1. * np.arange(len(non_ip)) / (len(non_ip) - 1)
+    plt.plot(sorted_list, p)
+    plt.xscale('log')
+    plt.title('non ip packets')
 
     ######################################################################
     # plot headers cdf
     ######################################################################
 
     # plot tcp header cdf
-    # sorted_list = np.sort(tcp_header)
-    # p = 1. * np.arange(len(tcp_header)) / (len(tcp_header) - 1)
-    # plt.plot(sorted_list, p)
-    # plt.xscale('log')
-    # plt.title('tcp headers')
-    # plt.show()
+    plt.figure(6)
+    tcp_header_list = np.sort(tcp_header)
+    p = 1. * np.arange(len(tcp_header)) / (len(tcp_header) - 1)
+    plt.plot(tcp_header_list, p)
+    plt.xscale('log')
+    plt.title('tcp headers')
 
     # plot udp header cdf
-    # sorted_list = np.sort(udp_header)
-    # p = 1. * np.arange(len(udp_header)) / (len(udp_header) - 1)
-    # plt.plot(sorted_list, p)
-    # plt.xscale('log')
-    # plt.title('udp headers')
-    # plt.show()
+    plt.figure(7)
+    udp_header_list = np.sort(udp_header)
+    p = 1. * np.arange(len(udp_header)) / (len(udp_header) - 1)
+    plt.plot(udp_header_list, p)
+    plt.xscale('log')
+    plt.title('udp headers')
 
     # plot ip header cdf
-    print(ip_header)
-    sorted_list = np.sort(ip_header)
+    plt.figure(8)
+    ip_header_list = np.sort(ip_header)
     p = 1. * np.arange(len(ip_header)) / (len(ip_header) - 1)
-    plt.plot(sorted_list, p)
+    plt.plot(ip_header_list, p)
     plt.xscale('log')
     plt.title('ip headers')
+
+
+    # show figures
     plt.show()
