@@ -20,6 +20,7 @@ if __name__ == '__main__':
     tcp = []
     udp = []
     ip = []
+    non_ip = []
 
     # collect all packet lengths
     for no, time, source, destination, protocol, length, info in data:
@@ -34,16 +35,20 @@ if __name__ == '__main__':
         # collect UDP lengths
         elif protocol == 'UDP':
             udp.append(int(length))
+        # collect IP lengths
+        elif protocol == 'IPv4':
+            ip.append(int(length))
+        # collect non-IP lengths:
+        else:
+            non_ip.append(int(length))
 
     # collect values
     all_size = [x for x in protocols.values()]
 
-    # debug
-    # print(all_size)
-    # print(tcp)
-    # print(udp)
-
     ######################################################################
+
+    # cdf function source
+    # (https://unix.stackexchange.com/questions/314374/how-to-plot-a-cdf-from-array-using-matplotlib-python)
 
     # plot all packets cdf
     # sorted_list = np.sort(all_size)
@@ -54,12 +59,12 @@ if __name__ == '__main__':
     # plt.show()
 
     # plot tcp packets cdf
-    sorted_list = np.sort(tcp)
-    p = 1. * np.arange(len(tcp)) / (len(tcp) - 1)
-    plt.plot(sorted_list, p)
-    plt.xscale('log')
-    plt.title('tcp packets')
-    plt.show()
+    # sorted_list = np.sort(tcp)
+    # p = 1. * np.arange(len(tcp)) / (len(tcp) - 1)
+    # plt.plot(sorted_list, p)
+    # plt.xscale('log')
+    # plt.title('tcp packets')
+    # plt.show()
 
     # plot udp packets cdf
     # sorted_list = np.sort(udp)
@@ -68,3 +73,19 @@ if __name__ == '__main__':
     # plt.xscale('log')
     # plt.title('udp packets')
     # plt.show()
+
+    # plot ip packets cdf
+    # sorted_list = np.sort(ip)
+    # p = 1. * np.arange(len(ip)) / (len(ip) - 1)
+    # plt.plot(sorted_list, p)
+    # plt.xscale('log')
+    # plt.title('ip packets')
+    # plt.show()
+
+    # plot non-ip packets cdf
+    sorted_list = np.sort(non_ip)
+    p = 1. * np.arange(len(non_ip)) / (len(non_ip) - 1)
+    plt.plot(sorted_list, p)
+    plt.xscale('log')
+    plt.title('non ip packets')
+    plt.show()
