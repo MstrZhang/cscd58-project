@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     # coarse count of flows
     count = 0
-    for no, time, source, destination, protocol, length, info in data:
+    for no, time, source, destination, protocol, length, info in data[:100]:
         if protocol == "UDP" or protocol == "TCP":
             # Extract the src and dest ports
             split_info = info.split('  >  ')
@@ -43,48 +43,45 @@ if __name__ == '__main__':
             # Build a flow identifier from src/dest ips
             ident = ip_to_int(source) + ip_to_int(destination) + int(src_port) + int(dest_port)
             if not ident in flows:
-                flows[ident] = {'protocol' : protocol, 'start-time' : time, 'end-time' : time}
+                flows[ident] = {'protocol' : protocol, 'times' : [time]}
             else:
-                flows[ident]['end-time'] = time
+                flows[ident]['times'].append(time)
     
     # Extract the finishing times for each required analysis
-    # We won't consider a flow if the start time and end time are equivalent, this
-    # can be read as a single packet being sent
-    flow_durations = []
-    TCP_durations = []
-    UDP_durations = []
+    packet_arrival_set = []
+    TCP_arrival_set = []
+    UDP_arrival_set = []
     for flow in flows:
-        if not flows[flow]['start-time'] == flows[flow]['end-time']:
-            duration = float(flows[flow]['end-time']) - float(flows[flow]['start-time'])
-            flow_durations.append(duration)
-            
-            # Separate by protocol
+        for i in range(len(flows[flow]['times']) - 1):
+            packet_arrival_set.append(float(flows[flow]['times'][i + 1]) - float(flows[flow]['times'][i]))
+
+            # Filter for TCP or UDP
             if flows[flow]['protocol'] == 'TCP':
-                TCP_durations.append(duration)
+                TCP_arrival_set.append(float(flows[flow]['times'][i + 1]) - float(flows[flow]['times'][i]))
             else:
-                UDP_durations.append(duration)
-    
+                UDP_arrival_set.append(float(flows[flow]['times'][i + 1]) - float(flows[flow]['times'][i]))
+
     ######################################################################
     # plot all flows cdf
     ######################################################################
 
     # plot all flows cdf
     plt.figure(1)
-    sorted_list = np.sort(flow_durations)
-    p = 1. * np.arange(len(flow_durations)) / (len(flow_durations) - 1)
+    sorted_list = np.sort(packet_arrival_set)
+    p = 1. * np.arange(len(packet_arrival_set)) / (len(packet_arrival_set) - 1)
     plt.plot(sorted_list, p)
     plt.title('all flows')
 
     # plot tcp packets cdf
     plt.figure(2)
-    tcp_list = np.sort(TCP_durations)
-    p = 1. * np.arange(len(TCP_durations)) / (len(TCP_durations) - 1)
+    tcp_list = np.sort(TCP_arrival_set)
+    p = 1. * np.arange(len(TCP_arrival_set)) / (len(TCP_arrival_set) - 1)
     plt.plot(tcp_list, p)
     plt.title('tcp flows')
 
     # plot udp packets cdf
     plt.figure(3)
-    udp_list = np.sort(UDP_durations)
-    p = 1. * np.arange(len(UDP_durations)) / (len(UDP_durations) - 1)
+    udp_list = np.sort(UDP_arrival_set)
+    p = 1. * np.arange(len(UDP_arrival_set)) / (len(UDP_arrival_set) - 1)
     plt.plot(udp_list, p)
     plt.title('udp flows')

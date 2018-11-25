@@ -8,6 +8,15 @@ mapping = {
     'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
 }
 
+def ip_to_int(address):
+    split_address = address.split('.')
+    total = 0
+    multiplicator = 256^3
+    for item in split_address:
+        total += int(item) * multiplicator
+        multiplicator = multiplicator / 256
+    return total
+
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark)
@@ -15,37 +24,38 @@ if __name__ == '__main__':
         data = list(csv.reader(f))[1:]
 
     flows = {}
-    flow_info = []
 
     # coarse count of flows
     for no, time, source, destination, protocol, length, info in data:
         if protocol == "UDP" or protocol == "TCP":
-            split_info = info.split(' ')
-            if split_info[0][0] == '[':
-                src_port = split_info[2]
-                dest_port = split_info[6]
+            # Extract the src and dest ports
+            split_info = info.split('  >  ')
+            if not split_info[0][0].isdigit():
+                src_port = split_info[0].split(' ')[-1]
+                dest_port = split_info[1].split(' ')[0]
             else:
                 src_port = split_info[0]
-                dest_port = split_info[4]
-            if not protocol in flows:
-                flows[protocol] = {'count' : 1}
-                flow_info.append([source, destination, protocol, src_port, dest_port])
-                flow_info.append([destination, source, protocol, dest_port, src_port])
-            else:
-                if [source, destination, protocol, src_port, dest_port] in flow_info:
-                    flows[protocol]['count'] += 1
-                else:
-                    flow_info.append([source, destination, protocol, src_port, dest_port])
-                    flow_info.append([destination, source, protocol, dest_port, src_port])
+                dest_port = split_info[1].split(' ')[0]
+
+            # Build a flow identifier from src/dest ips
+            ident = ip_to_int(source) + ip_to_int(destination) + int(src_port) + int(dest_port)
+            if not ident in flows:
+                flows[ident] = {'protocol' : protocol}
 
     # calculate total (for percentage calculation)
     total = 0
-    for value in flows.values():
-        total += value['count']
+    tcp_count = 0
+    udp_count = 0
+    for flow in flows:
+        total += 1
+        if flows[flow]['protocol'] == 'TCP':
+            tcp_count += 1
+        else:
+            udp_count += 1
 
     # output
-    print('flow count:')
-    for key, value in flows.items():
-        print(key + ':\t' + str(value['count']) + ' flows' + '\t' + '{0:.2f}'.format(float(value['count']) / total * 100)) + '%'
+    print('flow count: ' + str(total) + ' flows')
+    print('TCP total: ' + ':\t' + str(tcp_count) + ' flows' + '\t' + '{0:.2f}'.format(float(tcp_count) / total * 100)) + '%'
+    print('UDP total: ' + ':\t' + str(udp_count) + ' flows' + '\t' + '{0:.2f}'.format(float(udp_count) / total * 100)) + '%'
     print('='*55)
     
