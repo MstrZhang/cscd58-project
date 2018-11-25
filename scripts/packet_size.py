@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+from pylab import *
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
@@ -46,12 +47,11 @@ if __name__ == '__main__':
     # plot all packets cdf
     ######################################################################
 
-    plot all packets cdf
+    # plot all packets cdf
     plt.figure(1)
     sorted_list = np.sort(all_size)
     p = 1. * np.arange(len(all_size)) / (len(all_size) - 1)
     plt.plot(sorted_list, p)
-    plt.xscale('log')
     plt.title('all packets')
 
     # plot tcp packets cdf
@@ -59,7 +59,6 @@ if __name__ == '__main__':
     tcp_list = np.sort(tcp)
     p = 1. * np.arange(len(tcp)) / (len(tcp) - 1)
     plt.plot(tcp_list, p)
-    plt.xscale('log')
     plt.title('tcp packets')
 
     # plot udp packets cdf
@@ -67,7 +66,6 @@ if __name__ == '__main__':
     udp_list = np.sort(udp)
     p = 1. * np.arange(len(udp)) / (len(udp) - 1)
     plt.plot(udp_list, p)
-    plt.xscale('log')
     plt.title('udp packets')
 
     # plot ip packets cdf
@@ -75,7 +73,6 @@ if __name__ == '__main__':
     sorted_list = np.sort(ip)
     p = 1. * np.arange(len(ip)) / (len(ip) - 1)
     plt.plot(sorted_list, p)
-    plt.xscale('log')
     plt.title('ip packets')
 
     # plot non-ip packets cdf
@@ -83,7 +80,6 @@ if __name__ == '__main__':
     sorted_list = np.sort(non_ip)
     p = 1. * np.arange(len(non_ip)) / (len(non_ip) - 1)
     plt.plot(sorted_list, p)
-    plt.xscale('log')
     plt.title('non ip packets')
 
     ######################################################################

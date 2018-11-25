@@ -1,11 +1,17 @@
 import csv
 
+# mapping = {
+#     'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'LPD', 'CVSPSERVER', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
+#     'TRANSPORT': ['TCP', 'UDP', 'NBSS', 'Syslog'],
+#     'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'VRRP', 'RSL', 'ESP', 'GRE'],
+#     'LINK': ['ARP', 'CDP', 'LLC', 'PPTP'],
+#     'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
+# }
+
 mapping = {
-    'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'LPD', 'CVSPSERVER', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
-    'TRANSPORT': ['TCP', 'UDP', 'NBSS', 'Syslog'],
-    'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'VRRP', 'RSL', 'ESP', 'GRE'],
-    'LINK': ['ARP', 'CDP', 'LLC', 'PPTP'],
-    'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
+    'TRANSPORT': ['TCP', 'UDP'],
+    'NETWORK': ['IPv4', 'ICMPv6', 'ICMP'],
+    'LINK': ['ARP'],
 }
 
 if __name__ == '__main__':
@@ -61,4 +67,13 @@ if __name__ == '__main__':
             transport_count += value['count']
             transport_length += value['length']
     print(str(transport_count) + ' packets\t' + '{0:.2f}'.format(float(transport_count) / total * 100) + '%\t' + str(transport_length) + ' bytes')
+    print('='*55)
+    print('other layer:')
+    other_count = 0
+    other_length = 0
+    for key, value in protocols.items():
+        if key not in mapping['LINK'] and key not in mapping['NETWORK'] and key not in mapping['TRANSPORT']:
+            other_count += value['count']
+            other_length += value['length']
+    print(str(other_count) + ' packets\t' + '{0:.2f}'.format(float(other_count) / total * 100) + '%\t' + str(other_length) + ' bytes')
     print('='*55)
