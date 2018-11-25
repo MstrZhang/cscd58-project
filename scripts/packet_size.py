@@ -1,19 +1,11 @@
-######################################################################
-#
-# cdf function source
-# (https://unix.stackexchange.com/questions/314374/how-to-plot-a-cdf-from-array-using-matplotlib-python)
-#
-######################################################################
-
 import csv
-import re
 import numpy as np
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     # read pcap csv dump
-    # (csv dump extracted from wireshark)
-    with open('../raw/univ1_trace.csv', 'rb') as f:
+    # (csv dump extracted from wireshark -- tcp and ip header lengths specifically extracted from wireshark)
+    with open('../raw/new_dump.csv', 'rb') as f:
         data = list(csv.reader(f))[1:]
 
     # full packet size
@@ -24,42 +16,37 @@ if __name__ == '__main__':
     non_ip = []
 
     # header size
-    # TODO: header calculation is probably not exactly correct
     tcp_header = []
     udp_header = []
     ip_header = []
 
     # collect all packet lengths
-    for no, time, source, destination, protocol, length, info in data:
+    for no, time, source, destination, protocol, length, info, tcp_hdr, ip_hdr in data:
         # collect all lengths
         all_size.append(int(length))
 
         # collect TCP lengths
         if protocol == 'TCP':
             tcp.append(int(length))
+            tcp_header.append(int(tcp_hdr))
             ip.append(int(length))
-            match = re.search(r'Len=(\d*)', info)
-            if match:
-                tcp_header.append(int(match.group(0).split('=')[1]))
-                ip_header.append(int(match.group(0).split('=')[1]))
+            ip_header.append(int(ip_hdr))
         # collect UDP lengths
         elif protocol == 'UDP':
             udp.append(int(length))
+            udp_header.append(8)                # udp headers are always 8 bytes
             ip.append(int(length))
-            match = re.search(r'Len=(\d*)', info)
-            if match:
-                udp_header.append(int(match.group(0).split('=')[1]))
-                ip_header.append(int(match.group(0).split('=')[1]))
+            ip_header.append(int(ip_hdr))
+
         # collect non-IP lengths:
         else:
             non_ip.append(int(length))
 
-
     ######################################################################
     # plot all packets cdf
     ######################################################################
 
-    # plot all packets cdf
+    plot all packets cdf
     plt.figure(1)
     sorted_list = np.sort(all_size)
     p = 1. * np.arange(len(all_size)) / (len(all_size) - 1)
@@ -116,7 +103,6 @@ if __name__ == '__main__':
     udp_header_list = np.sort(udp_header)
     p = 1. * np.arange(len(udp_header)) / (len(udp_header) - 1)
     plt.plot(udp_header_list, p)
-    plt.xscale('log')
     plt.title('udp headers')
 
     # plot ip header cdf
@@ -124,7 +110,6 @@ if __name__ == '__main__':
     ip_header_list = np.sort(ip_header)
     p = 1. * np.arange(len(ip_header)) / (len(ip_header) - 1)
     plt.plot(ip_header_list, p)
-    plt.xscale('log')
     plt.title('ip headers')
 
 
