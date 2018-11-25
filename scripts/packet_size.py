@@ -1,3 +1,6 @@
+# cdf function source
+# (https://unix.stackexchange.com/questions/314374/how-to-plot-a-cdf-from-array-using-matplotlib-python)
+
 import csv
 import numpy as np
 from pylab import *
@@ -6,7 +9,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark -- tcp and ip header lengths specifically extracted from wireshark)
-    with open('../raw/new_dump.csv', 'rb') as f:
+    with open('../raw/packet_size_dump.csv', 'rb') as f:
         data = list(csv.reader(f))[1:]
 
     # full packet size
@@ -22,22 +25,23 @@ if __name__ == '__main__':
     ip_header = []
 
     # collect all packet lengths
-    for no, time, source, destination, protocol, length, info, tcp_hdr, ip_hdr in data:
+    for no, time, source, destination, protocol, length, info, tcp_payload in data:
+
         # collect all lengths
         all_size.append(int(length))
 
         # collect TCP lengths
         if protocol == 'TCP':
             tcp.append(int(length))
-            tcp_header.append(int(tcp_hdr))
+            tcp_header.append(int(length) - int(tcp_payload))
             ip.append(int(length))
-            ip_header.append(int(ip_hdr))
+            ip_header.append(int(length) - int(tcp_payload))
         # collect UDP lengths
         elif protocol == 'UDP':
             udp.append(int(length))
-            udp_header.append(8)                # udp headers are always 8 bytes
+            udp_header.append(8) # udp headers are always 8 bytes
             ip.append(int(length))
-            ip_header.append(int(ip_hdr))
+            ip_header.append(8)
 
         # collect non-IP lengths:
         else:
@@ -52,35 +56,40 @@ if __name__ == '__main__':
     sorted_list = np.sort(all_size)
     p = 1. * np.arange(len(all_size)) / (len(all_size) - 1)
     plt.plot(sorted_list, p)
-    plt.title('all packets')
+    plt.xlabel('bytes')
+    plt.title('CDF of Packet Sizes for All Packets')
 
     # plot tcp packets cdf
     plt.figure(2)
     tcp_list = np.sort(tcp)
     p = 1. * np.arange(len(tcp)) / (len(tcp) - 1)
     plt.plot(tcp_list, p)
-    plt.title('tcp packets')
+    plt.xlabel('bytes')
+    plt.title('CDF of Packet Sizes for TCP Packets')
 
     # plot udp packets cdf
     plt.figure(3)
     udp_list = np.sort(udp)
     p = 1. * np.arange(len(udp)) / (len(udp) - 1)
     plt.plot(udp_list, p)
-    plt.title('udp packets')
+    plt.xlabel('bytes')
+    plt.title('CDF of Packet Sizes for UDP Packets')
 
     # plot ip packets cdf
     plt.figure(4)
     sorted_list = np.sort(ip)
     p = 1. * np.arange(len(ip)) / (len(ip) - 1)
     plt.plot(sorted_list, p)
-    plt.title('ip packets')
+    plt.xlabel('bytes')
+    plt.title('CDF of Packet Sizes for IP Packets')
 
     # plot non-ip packets cdf
     plt.figure(5)
     sorted_list = np.sort(non_ip)
     p = 1. * np.arange(len(non_ip)) / (len(non_ip) - 1)
     plt.plot(sorted_list, p)
-    plt.title('non ip packets')
+    plt.xlabel('bytes')
+    plt.title('CDF of Packet Sizes for Non-IP Packets')
 
     ######################################################################
     # plot headers cdf
@@ -91,22 +100,24 @@ if __name__ == '__main__':
     tcp_header_list = np.sort(tcp_header)
     p = 1. * np.arange(len(tcp_header)) / (len(tcp_header) - 1)
     plt.plot(tcp_header_list, p)
-    plt.xscale('log')
-    plt.title('tcp headers')
+    plt.xlabel('bytes')
+    plt.title('CDF of Header Sizes for TCP Packets')
 
     # plot udp header cdf
     plt.figure(7)
     udp_header_list = np.sort(udp_header)
     p = 1. * np.arange(len(udp_header)) / (len(udp_header) - 1)
     plt.plot(udp_header_list, p)
-    plt.title('udp headers')
+    plt.xlabel('bytes')
+    plt.title('CDF of Header Sizes for UDP Packets')
 
     # plot ip header cdf
     plt.figure(8)
     ip_header_list = np.sort(ip_header)
     p = 1. * np.arange(len(ip_header)) / (len(ip_header) - 1)
     plt.plot(ip_header_list, p)
-    plt.title('ip headers')
+    plt.xlabel('bytes')
+    plt.title('CDF of Header Sizes for IP Packets')
 
 
     # show figures
