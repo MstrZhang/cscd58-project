@@ -1,0 +1,64 @@
+task list:
+
+    - per-packet statistics
+        - type of packet
+            - count of packets
+            - percentage of all packets
+            - total number of bytes
+            - separate into layers
+                - link layer
+                - transport layer
+                - network layer
+                - other
+        - size of packet
+            - CDF graphs
+                - for TCP
+                - for UDP
+                - for IP
+                - for non-IP
+            - header CDF graphs
+                - for TCP
+                - for UDP
+                - for IP
+
+----------------------------------------------------------------------------------------------
+
+    - flow statistics
+        - flow type
+            - similar to the per-packet
+        - flow duration
+            - CDF of flow durations
+                - for all flows
+                - for TCP flows
+                - for UDP flows
+        - flow size
+            - packet count
+            - byte count
+            - CDF of flow size
+                - TCP flows
+                - UDP flows
+            - overhead ratio
+                - i.e. sum of all headers / total size of data transferred by flow
+                    - use the number 9999 to represent infinity
+            - CDF of overhead ratio
+        - inter-packet arrival time
+            - arrival time between consecutive packets in each flow
+            - CDF of inter-arrival time
+                - for TCP flows
+                - for UDP flows
+        - TCP state
+            - determine final state of each TCP flow
+
+----------------------------------------------------------------------------------------------
+
+    - RTT estimation
+        - draw sample RTT
+        - draw estimated RTT as function of time
+        - select:
+            - top 3 largest TCP flows in terms of packet number
+            - top 3 largest TCP flows in terms of total byte size
+            - top 3 longest TCP flows in terms of duration
+
+----------------------------------------------------------------------------------------------
+
+    - questions
