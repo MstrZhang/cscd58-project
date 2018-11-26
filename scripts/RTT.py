@@ -38,7 +38,7 @@ if __name__ == '__main__':
             # Build a flow identifier from src/dest ips
             ident = '{src_ip}:{src_port},{dst_ip}:{dst_port}'.format(src_ip=source,src_port=src_port,dst_ip=destination,dst_port=dest_port)
             reverse = '{dst_ip}:{dst_port},{src_ip}:{src_port}'.format(src_ip=source,src_port=src_port,dst_ip=destination,dst_port=dest_port)
-            if not ident in flows and not reverse in flows:
+            if not ident in flows:
                 flows[ident] = {'packet-count' : 1, 'size' : int(length), 'start' : 0, 'end' : 0, 'times' : [], 'syn' : 0, 'sample-rtt' : 0, 'prev-ack-number' : 0, 'duration' : 0, 'prev-time' : 0}
             else:
                 if reverse in flows:
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                 flows[ident]['prev-ack-number'] = int(ack)
             
             if syn != 'Set' and flows[ident]['syn'] == 1 and flows[ident]['prev-ack-number'] != int(ack) and rtt != '':
-                flows[ident]['sample-rtt'] += ((1 - alpha) * float(rtt) + alpha * float(rtt))
+                flows[ident]['sample-rtt'] += float(rtt)
                 flows[ident]['prev-ack-number'] = int(ack)
                 flows[ident]['times'].append(float(time) - float(flows[ident]['prev-time']))
                 flows[ident]['prev-time'] = float(time)
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         estimated_rtt_p1 = largest_flows_p[0]['times'][0]
         estimated_rtts_p1.append(estimated_rtt_p1)
         for i in range(len(largest_flows_p[0]['times']) - 1):
-            estimated_rtt_p1 += ((1 - alpha) * largest_flows_p[0]['times'][i]) + (alpha * largest_flows_p[0]['times'][i + 1])
+            estimated_rtt_p1 = ((1 - alpha) * estimated_rtt_p1) + (alpha * largest_flows_p[0]['times'][i + 1])
             estimated_rtts_p1.append(estimated_rtt_p1)
     else: estimated_rtt_p1 = 0
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         estimated_rtt_p2 = largest_flows_p[1]['times'][0]
         estimated_rtts_p2.append(estimated_rtt_p2)
         for i in range(len(largest_flows_p[1]['times']) - 1):
-            estimated_rtt_p2 += ((1 - alpha) * largest_flows_p[1]['times'][i]) + (alpha * largest_flows_p[1]['times'][i + 1])
+            estimated_rtt_p2 = ((1 - alpha) * estimated_rtt_p2) + (alpha * largest_flows_p[1]['times'][i + 1])
             estimated_rtts_p2.append(estimated_rtt_p2)
     else: estimated_rtt_p2 = 0
     
@@ -138,18 +138,9 @@ if __name__ == '__main__':
         estimated_rtt_p3 = largest_flows_p[2]['times'][0]
         estimated_rtts_p3.append(estimated_rtt_p3)
         for i in range(len(largest_flows_p[2]['times']) - 1):
-            estimated_rtt_p3 += ((1 - alpha) * largest_flows_p[2]['times'][i]) + (alpha * largest_flows_p[2]['times'][i + 1])
+            estimated_rtt_p3 = ((1 - alpha) * estimated_rtt_p3) + (alpha * largest_flows_p[2]['times'][i + 1])
             estimated_rtts_p3.append(estimated_rtt_p3)
     else: estimated_rtt_p3 = 0
-    
-    print estimated_rtt_p1
-    print largest_flows_p[0]['sample-rtt']
-    print '#' * 55
-    print estimated_rtt_p2
-    print largest_flows_p[1]['sample-rtt']
-    print '#' * 55
-    print estimated_rtt_p3
-    print largest_flows_p[2]['sample-rtt']
 
     ######################################################################
     # calculate estimated RTTS - byes
@@ -159,7 +150,7 @@ if __name__ == '__main__':
         estimated_rtt_b1 = largest_flows_p[0]['times'][0]
         estimated_rtts_b1.append(estimated_rtt_b1)
         for i in range(len(largest_flows_p[0]['times']) - 1):
-            estimated_rtt_b1 += ((1 - alpha) * largest_flows_b[0]['times'][i]) + (alpha * largest_flows_b[0]['times'][i + 1])
+            estimated_rtt_b1 = ((1 - alpha) * estimated_rtt_b1) + (alpha * largest_flows_b[0]['times'][i + 1])
             estimated_rtts_b1.append(estimated_rtt_b1)
     else: estimated_rtt_b1 = 0
 
@@ -168,7 +159,7 @@ if __name__ == '__main__':
         estimated_rtt_b2 = largest_flows_b[1]['times'][0]
         estimated_rtts_b2.append(estimated_rtt_b2)
         for i in range(len(largest_flows_b[1]['times']) - 1):
-            estimated_rtt_b2 += ((1 - alpha) * largest_flows_b[1]['times'][i]) + (alpha * largest_flows_b[1]['times'][i + 1])
+            estimated_rtt_b2 = ((1 - alpha) * estimated_rtt_b2) + (alpha * largest_flows_b[1]['times'][i + 1])
             estimated_rtts_b2.append(estimated_rtt_b2)
     else: estimated_rtt_b2 = 0
     
@@ -177,7 +168,7 @@ if __name__ == '__main__':
         estimated_rtt_b3 = largest_flows_b[2]['times'][0]
         estimated_rtts_b3.append(estimated_rtt_b3)
         for i in range(len(largest_flows_b[2]['times']) - 1):
-            estimated_rtt_b3 += ((1 - alpha) * largest_flows_b[2]['times'][i]) + (alpha * largest_flows_b[2]['times'][i + 1])
+            estimated_rtt_b3 = ((1 - alpha) * estimated_rtt_b3) + (alpha * largest_flows_b[2]['times'][i + 1])
             estimated_rtts_b3.append(estimated_rtt_b3)
     else: estimated_rtt_b3 = 0
 
@@ -189,7 +180,7 @@ if __name__ == '__main__':
         estimated_rtt_d1 = largest_flows_p[0]['times'][0]
         estimated_rtts_d1.append(estimated_rtt_d1)
         for i in range(len(largest_flows_p[0]['times']) - 1):
-            estimated_rtt_d1 += ((1 - alpha) * largest_flows_d[0]['times'][i]) + (alpha * largest_flows_d[0]['times'][i + 1])
+            estimated_rtt_d1 = ((1 - alpha) * estimated_rtt_d1) + (alpha * largest_flows_d[0]['times'][i + 1])
             estimated_rtts_d1.append(estimated_rtt_d1)
     else: estimated_rtt_d1 = 0
 
@@ -198,7 +189,7 @@ if __name__ == '__main__':
         estimated_rtt_d2 = largest_flows_d[1]['times'][0]
         estimated_rtts_d2.append(estimated_rtt_d2)
         for i in range(len(largest_flows_d[1]['times']) - 1):
-            estimated_rtt_d2 += ((1 - alpha) * largest_flows_d[1]['times'][i]) + (alpha * largest_flows_d[1]['times'][i + 1])
+            estimated_rtt_d2 = ((1 - alpha) * estimated_rtt_d2) + (alpha * largest_flows_d[1]['times'][i + 1])
             estimated_rtts_d2.append(estimated_rtt_d2)
     else: estimated_rtt_d2 = 0
     
@@ -207,6 +198,6 @@ if __name__ == '__main__':
         estimated_rtt_d3 = largest_flows_d[2]['times'][0]
         estimated_rtts_d3.append(estimated_rtt_d3)
         for i in range(len(largest_flows_d[2]['times']) - 1):
-            estimated_rtts_d3 += ((1 - alpha) * largest_flows_d[2]['times'][i]) + (alpha * largest_flows_d[2]['times'][i + 1])
+            estimated_rtts_d3 = ((1 - alpha) * estimated_rtt_d3) + (alpha * largest_flows_d[2]['times'][i + 1])
             estimated_rtts_d3.append(estimated_rtt_d3)
     else: estimated_rtt_d3 = 0
