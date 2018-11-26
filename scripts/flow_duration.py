@@ -2,23 +2,6 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-mapping = {
-    'APPLICATION': ['TELNET', 'MySQL', 'SMTP', 'SSH', 'RIP', 'DHCPv6', 'DNS', 'LPD', 'CVSPSERVER', 'Intel ANS probe', 'VNC', 'SSL', 'ISAKMP', 'MDNS', 'MS NLB', 'DSI', 'LLMNR', 'NTP', 'NCS', 'BOOTP', 'SRVLOC'],
-    'TRANSPORT': ['TCP', 'UDP', 'NBSS', 'Syslog'],
-    'NETWORK': ['IPX', 'IPv4', 'IGMPv0', 'ICMPv6', 'ICMP', 'OSPF', 'PIMv0', 'IGRP', 'VRRP', 'RSL', 'ESP', 'GRE'],
-    'LINK': ['ARP', 'CDP', 'LLC', 'PPTP'],
-    'OTHER': ['NBNS', '0x200e', 'Gryphon', 'NBDS', 'NCP', 'UDPENCAP']
-}
-
-def ip_to_int(address):
-    split_address = address.split('.')
-    total = 0
-    multiplicator = 256^3
-    for item in split_address:
-        total += int(item) * multiplicator
-        multiplicator = multiplicator / 256
-    return total
-
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark)
@@ -28,7 +11,6 @@ if __name__ == '__main__':
     flows = {}
 
     # coarse count of flows
-    count = 0
     for no, time, source, destination, protocol, length, info in data:
         if protocol == "UDP" or protocol == "TCP":
             # Extract the src and dest ports
