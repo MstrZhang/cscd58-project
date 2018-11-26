@@ -2,42 +2,32 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-def ip_to_int(address):
-    split_address = address.split('.')
-    total = 0
-    multiplicator = 256^3
-    for item in split_address:
-        total += int(item) * multiplicator
-        multiplicator = multiplicator / 256
-    return total
-
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark)
-    with open('../raw/univ1_trace.csv', 'rb') as f:
+    with open('../raw/ipat_dump.csv', 'rb') as f:
         data = list(csv.reader(f))[1:]
 
     flows = {}
 
     # coarse count of flows
-    count = 0
-    for no, time, source, destination, protocol, length, info in data[:100]:
+    for no, time, source, destination, protocol, length, info, tcp_src_port, tcp_dst_port, udp_src_port, udp_dst_port in data:
+        # Extract the src and dest ports
         if protocol == "UDP" or protocol == "TCP":
-            # Extract the src and dest ports
-            split_info = info.split('  >  ')
-            if not split_info[0][0].isdigit():
-                src_port = split_info[0].split(' ')[-1]
-                dest_port = split_info[1].split(' ')[0]
-            else:
-                src_port = split_info[0]
-                dest_port = split_info[1].split(' ')[0]
+            src_port = tcp_src_port if protocol == "TCP" else udp_src_port
+            dest_port = tcp_dst_port if protocol == "TCP" else udp_dst_port
 
-            # Build a flow identifier from src/dest ips
-            ident = ip_to_int(source) + ip_to_int(destination) + int(src_port) + int(dest_port)
-            if not ident in flows:
-                flows[ident] = {'protocol' : protocol, 'times' : [time]}
+            # build a flow identifier from src/dest ips
+            ident = '{src_ip}:{src_port},{dst_ip}:{dst_port}'.format(src_ip=source, src_port=src_port, dst_ip=destination, dst_port=dest_port)
+            reverse = '{dst_ip}:{dst_port},{src_ip}:{src_port}'.format(src_ip=source, src_port=src_port, dst_ip=destination, dst_port=dest_port)
+            
+            if (not ident in flows) and (not reverse in flows):
+                flows[ident] = {'protocol': protocol, 'times': [time]}
             else:
-                flows[ident]['times'].append(time)
+                try:
+                    flows[ident]['times'].append(time)
+                except:
+                    flows[reverse]['times'].append(time)
     
     # Extract the finishing times for each required analysis
     packet_arrival_set = []
@@ -63,7 +53,7 @@ if __name__ == '__main__':
     p = 1. * np.arange(len(packet_arrival_set)) / (len(packet_arrival_set) - 1)
     plt.plot(sorted_list, p)
     plt.xscale('log')
-    plt.title('packet interpacket arrival time')
+    plt.title('CDF of All Interpacket Arrival Time')
 
     # plot tcp packets cdf
     plt.figure(2)
@@ -71,7 +61,7 @@ if __name__ == '__main__':
     p = 1. * np.arange(len(TCP_arrival_set)) / (len(TCP_arrival_set) - 1)
     plt.plot(tcp_list, p)
     plt.xscale('log')
-    plt.title('tcp interpacket arrival time')
+    plt.title('CDF of TCP Interpacket Arrival Time')
 
     # plot udp packets cdf
     plt.figure(3)
@@ -79,7 +69,7 @@ if __name__ == '__main__':
     p = 1. * np.arange(len(UDP_arrival_set)) / (len(UDP_arrival_set) - 1)
     plt.plot(udp_list, p)
     plt.xscale('log')
-    plt.title('udp interpacket arrival time')
+    plt.title('CDF of UDP Interpacket Arrival Time')
 
 
     # show graphs
