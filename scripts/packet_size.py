@@ -25,26 +25,24 @@ if __name__ == '__main__':
     ip_header = []
 
     # collect all packet lengths
-    for no, time, source, destination, protocol, length, info, tcp_payload in data:
+    for no, time, source, destination, protocol, length, info, tcp_payload, ip_payload in data:
 
         # collect all lengths
         all_size.append(int(length))
-
         # collect TCP lengths
         if protocol == 'TCP':
             tcp.append(int(length))
             tcp_header.append(int(length) - int(tcp_payload))
-            ip.append(int(length))
-            ip_header.append(int(length) - int(tcp_payload))
         # collect UDP lengths
         elif protocol == 'UDP':
             udp.append(int(length))
             udp_header.append(8) # udp headers are always 8 bytes
+        # collect IP lengths
+        elif protocol == 'IPv4':
             ip.append(int(length))
-            ip_header.append(8)
-
+            ip_header.append(int(length) - int(ip_payload))
         # collect non-IP lengths:
-        else:
+        elif protocol != 'IPv4':
             non_ip.append(int(length))
 
     ######################################################################
