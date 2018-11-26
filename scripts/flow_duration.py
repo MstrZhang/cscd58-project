@@ -62,7 +62,7 @@ if __name__ == '__main__':
     sorted_list = np.sort(flow_durations)
     p = 1. * np.arange(len(flow_durations)) / (len(flow_durations) - 1)
     plt.plot(sorted_list, p)
-    plt.xscale('log')
+    # plt.xscale('log')
     plt.xlabel('seconds')
     plt.title('CDF of Duration for All Flows')
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     tcp_list = np.sort(TCP_durations)
     p = 1. * np.arange(len(TCP_durations)) / (len(TCP_durations) - 1)
     plt.plot(tcp_list, p)
-    plt.xscale('log')
+    # plt.xscale('log')
     plt.xlabel('seconds')
     plt.title('CDF of Duration for TCP Flows')
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     udp_list = np.sort(UDP_durations)
     p = 1. * np.arange(len(UDP_durations)) / (len(UDP_durations) - 1)
     plt.plot(udp_list, p)
-    plt.xscale('log')
+    # plt.xscale('log')
     plt.xlabel('seconds')
     plt.title('CDF of Duration for UDP Flows')
 
