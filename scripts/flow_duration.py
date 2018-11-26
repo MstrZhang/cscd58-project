@@ -5,22 +5,17 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark)
-    with open('../raw/univ1_trace.csv', 'rb') as f:
+    with open('../raw/flow_duration_dump.csv', 'rb') as f:
         data = list(csv.reader(f))[1:]
 
     flows = {}
 
     # coarse count of flows
-    for no, time, source, destination, protocol, length, info in data:
+    for no, time, source, destination, protocol, length, info, tcp_src_port, tcp_dst_port, udp_src_port, udp_dst_port in data:
         if protocol == "UDP" or protocol == "TCP":
             # Extract the src and dest ports
-            split_info = info.split('  >  ')
-            if not split_info[0][0].isdigit():
-                src_port = split_info[0].split(' ')[-1]
-                dest_port = split_info[1].split(' ')[0]
-            else:
-                src_port = split_info[0]
-                dest_port = split_info[1].split(' ')[0]
+            src_port = tcp_src_port if protocol == "TCP" else udp_src_port
+            dest_port = tcp_dst_port if protocol == "TCP" else udp_dst_port
 
             # Build a flow identifier from src/dest ips
             ident = '{src_ip}:{src_port},{dst_ip}:{dst_port}'.format(src_ip=source, src_port=src_port, dst_ip=destination, dst_port=dest_port)
@@ -62,7 +57,7 @@ if __name__ == '__main__':
     sorted_list = np.sort(flow_durations)
     p = 1. * np.arange(len(flow_durations)) / (len(flow_durations) - 1)
     plt.plot(sorted_list, p)
-    # plt.xscale('log')
+    plt.xscale('log')
     plt.xlabel('seconds')
     plt.title('CDF of Duration for All Flows')
 
@@ -71,7 +66,7 @@ if __name__ == '__main__':
     tcp_list = np.sort(TCP_durations)
     p = 1. * np.arange(len(TCP_durations)) / (len(TCP_durations) - 1)
     plt.plot(tcp_list, p)
-    # plt.xscale('log')
+    plt.xscale('log')
     plt.xlabel('seconds')
     plt.title('CDF of Duration for TCP Flows')
 
@@ -80,7 +75,7 @@ if __name__ == '__main__':
     udp_list = np.sort(UDP_durations)
     p = 1. * np.arange(len(UDP_durations)) / (len(UDP_durations) - 1)
     plt.plot(udp_list, p)
-    # plt.xscale('log')
+    plt.xscale('log')
     plt.xlabel('seconds')
     plt.title('CDF of Duration for UDP Flows')
 
