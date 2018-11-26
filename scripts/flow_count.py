@@ -17,7 +17,8 @@ if __name__ == '__main__':
 
             # build a flow identifier from src/dest ips
             ident = '{src_ip}:{src_port},{dst_ip}:{dst_port}'.format(src_ip=source, src_port=src_port, dst_ip=destination, dst_port=dest_port)
-            if not ident in flows:
+            reverse = '{dst_ip}:{dst_port},{src_ip}:{src_port}'.format(src_ip=source, src_port=src_port, dst_ip=destination, dst_port=dest_port)
+            if (not ident in flows) and (not reverse in flows):
                 flows[ident] = {'protocol' : protocol}
 
     # calculate total (for percentage calculation)
@@ -35,5 +36,4 @@ if __name__ == '__main__':
     print('flow count: ' + str(total) + ' flows')
     print('TCP total: ' + ':\t' + str(tcp_count) + ' flows' + '\t' + '{0:.2f}'.format(float(tcp_count) / total * 100)) + '%'
     print('UDP total: ' + ':\t' + str(udp_count) + ' flows' + '\t' + '{0:.2f}'.format(float(udp_count) / total * 100)) + '%'
-    print('='*55)
     
