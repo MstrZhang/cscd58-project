@@ -6,6 +6,9 @@
 
 NOTE: `.gitignore` is ignoring the folder `/raw` so put large files in this folder otherwise GitHub will not let you upload
 
+since the `/raw` directory is too large for MarkUs you can download it here
+(https://drive.google.com/open?id=1W04gy6QXZYLK0XYyODGIUvHdD9XzdvuE)
+
 ---
 
 # Getting Files

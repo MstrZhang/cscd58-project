@@ -43,6 +43,29 @@ if __name__ == '__main__':
             else:
                 UDP_arrival_set.append(float(flows[flow]['times'][i + 1]) - float(flows[flow]['times'][i]))
 
+    # find duplicate times
+    seen = {}
+    dupes = []
+    for x in packet_arrival_set:
+        if x not in seen:
+            seen[x] = 1
+        else:
+            if seen[x] == 1:
+                dupes.append(x)
+            seen[x] += 1
+
+    tcp_dupes = []
+    udp_dupes = []
+    for element in dupes:
+        if element in TCP_arrival_set:
+            tcp_dupes.append(element)
+        if element in UDP_arrival_set:
+            udp_dupes.append(element)
+
+    print('most freq:' + str(max(set(dupes), key=dupes.count)))
+    print('tcp freq:' + str(max(set(tcp_dupes), key=tcp_dupes.count)))
+    print('udp freq:' + str(max(set(udp_dupes), key=udp_dupes.count)))
+
     ######################################################################
     # plot all flows cdf
     ######################################################################
@@ -70,7 +93,6 @@ if __name__ == '__main__':
     plt.plot(udp_list, p)
     plt.xscale('log')
     plt.title('CDF of UDP Interpacket Arrival Time')
-
 
     # show graphs
     plt.show()

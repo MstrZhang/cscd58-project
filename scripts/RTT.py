@@ -17,7 +17,7 @@ def ip_to_int(address):
 if __name__ == '__main__':
     # read pcap csv dump
     # (csv dump extracted from wireshark -- tcp and ip header lengths specifically extracted from wireshark)
-    with open('../raw/rtt_dump.csv', 'rb') as f:
+    with open('../raw/old_rtt_dump.csv', 'rb') as f:
         data = list(csv.reader(f))[1:]
 
     flows = {}
@@ -39,7 +39,7 @@ if __name__ == '__main__':
             ident = '{src_ip}:{src_port},{dst_ip}:{dst_port}'.format(src_ip=source,src_port=src_port,dst_ip=destination,dst_port=dest_port)
             reverse = '{dst_ip}:{dst_port},{src_ip}:{src_port}'.format(src_ip=source,src_port=src_port,dst_ip=destination,dst_port=dest_port)
             if not ident in flows:
-                flows[ident] = {'packet-count' : 1, 'size' : int(length), 'start' : 0, 'end' : 0, 'times' : [], 'syn' : 0, 'sample-rtt' : 0, 'prev-ack-number' : 0, 'duration' : 0, 'prev-time' : 0}
+                flows[ident] = {'source': str(source) + ':' + str(src_port), 'destination': str(destination) + ':' + str(dest_port), 'packet-count' : 1, 'size' : int(length), 'start' : 0, 'end' : 0, 'times' : [], 'syn' : 0, 'sample-rtt' : 0, 'prev-ack-number' : 0, 'duration' : 0, 'prev-time' : 0}
             else:
                 if reverse in flows:
                     ident = reverse
@@ -59,8 +59,6 @@ if __name__ == '__main__':
                 flows[ident]['prev-ack-number'] = int(ack)
                 flows[ident]['times'].append(float(time) - float(flows[ident]['prev-time']))
                 flows[ident]['prev-time'] = float(time)
-
-            
                 
     
     # Extract the desired information
@@ -123,6 +121,9 @@ if __name__ == '__main__':
             estimated_rtt_p1 = ((1 - alpha) * estimated_rtt_p1) + (alpha * largest_flows_p[0]['times'][i + 1])
             estimated_rtts_p1.append(estimated_rtt_p1)
     else: estimated_rtt_p1 = 0
+    plt.figure(1)
+    plt.plot(estimated_rtts_p1)
+    print(estimated_rtts_p1)
 
     estimated_rtts_p2 = []
     if largest_flows_p[1]['times'] != []:
@@ -132,6 +133,9 @@ if __name__ == '__main__':
             estimated_rtt_p2 = ((1 - alpha) * estimated_rtt_p2) + (alpha * largest_flows_p[1]['times'][i + 1])
             estimated_rtts_p2.append(estimated_rtt_p2)
     else: estimated_rtt_p2 = 0
+    plt.figure(2)
+    plt.plot(estimated_rtts_p2)
+    print(estimated_rtts_p2)
     
     estimated_rtts_p3 = []
     if largest_flows_p[2]['times'] != []:
@@ -141,18 +145,24 @@ if __name__ == '__main__':
             estimated_rtt_p3 = ((1 - alpha) * estimated_rtt_p3) + (alpha * largest_flows_p[2]['times'][i + 1])
             estimated_rtts_p3.append(estimated_rtt_p3)
     else: estimated_rtt_p3 = 0
+    plt.figure(3)
+    plt.plot(estimated_rtts_p3)
+    print(estimated_rtts_p3)
 
     ######################################################################
     # calculate estimated RTTS - byes
     ######################################################################
     estimated_rtts_b1 = []
     if largest_flows_b[0]['times'] != []:
-        estimated_rtt_b1 = largest_flows_p[0]['times'][0]
+        estimated_rtt_b1 = largest_flows_b[0]['times'][0]
         estimated_rtts_b1.append(estimated_rtt_b1)
-        for i in range(len(largest_flows_p[0]['times']) - 1):
+        for i in range(len(largest_flows_b[0]['times']) - 1):
             estimated_rtt_b1 = ((1 - alpha) * estimated_rtt_b1) + (alpha * largest_flows_b[0]['times'][i + 1])
             estimated_rtts_b1.append(estimated_rtt_b1)
     else: estimated_rtt_b1 = 0
+    plt.figure(4)
+    plt.plot(estimated_rtts_b1)
+    print(estimated_rtts_b1)
 
     estimated_rtts_b2 = []
     if largest_flows_b[1]['times'] != []:
@@ -162,6 +172,9 @@ if __name__ == '__main__':
             estimated_rtt_b2 = ((1 - alpha) * estimated_rtt_b2) + (alpha * largest_flows_b[1]['times'][i + 1])
             estimated_rtts_b2.append(estimated_rtt_b2)
     else: estimated_rtt_b2 = 0
+    plt.figure(5)
+    plt.plot(estimated_rtts_b2)
+    print(estimated_rtts_b2)
     
     estimated_rtts_b3 = []
     if largest_flows_b[2]['times'] != []:
@@ -171,6 +184,9 @@ if __name__ == '__main__':
             estimated_rtt_b3 = ((1 - alpha) * estimated_rtt_b3) + (alpha * largest_flows_b[2]['times'][i + 1])
             estimated_rtts_b3.append(estimated_rtt_b3)
     else: estimated_rtt_b3 = 0
+    plt.figure(6)
+    plt.plot(estimated_rtts_b3)
+    print(estimated_rtts_b3)
 
     ######################################################################
     # calculate estimated RTTS - byes
@@ -183,6 +199,9 @@ if __name__ == '__main__':
             estimated_rtt_d1 = ((1 - alpha) * estimated_rtt_d1) + (alpha * largest_flows_d[0]['times'][i + 1])
             estimated_rtts_d1.append(estimated_rtt_d1)
     else: estimated_rtt_d1 = 0
+    plt.figure(7)
+    plt.plot(estimated_rtts_d1)
+    print(estimated_rtts_d1)
 
     estimated_rtts_d2 = []
     if largest_flows_d[1]['times'] != []:
@@ -192,6 +211,9 @@ if __name__ == '__main__':
             estimated_rtt_d2 = ((1 - alpha) * estimated_rtt_d2) + (alpha * largest_flows_d[1]['times'][i + 1])
             estimated_rtts_d2.append(estimated_rtt_d2)
     else: estimated_rtt_d2 = 0
+    plt.figure(8)
+    plt.plot(estimated_rtts_d2)
+    print(estimated_rtts_d2)
     
     estimated_rtts_d3 = []
     if largest_flows_d[2]['times'] != []:
@@ -201,3 +223,21 @@ if __name__ == '__main__':
             estimated_rtts_d3 = ((1 - alpha) * estimated_rtt_d3) + (alpha * largest_flows_d[2]['times'][i + 1])
             estimated_rtts_d3.append(estimated_rtt_d3)
     else: estimated_rtt_d3 = 0
+    plt.figure(9)
+    plt.plot(estimated_rtts_d3)
+    print(estimated_rtts_d3)
+
+    print('largest flows (packet):')
+    print('{src} -> {dst}'.format(src=largest_flows_p[0]['source'], dst=largest_flows_p[0]['destination']))
+    print('{src} -> {dst}'.format(src=largest_flows_p[1]['source'], dst=largest_flows_p[1]['destination']))
+    print('{src} -> {dst}'.format(src=largest_flows_p[2]['source'], dst=largest_flows_p[2]['destination']))
+    print('largest flows (bytes):')
+    print('{src} -> {dst}'.format(src=largest_flows_b[0]['source'], dst=largest_flows_b[0]['destination']))
+    print('{src} -> {dst}'.format(src=largest_flows_b[1]['source'], dst=largest_flows_b[1]['destination']))
+    print('{src} -> {dst}'.format(src=largest_flows_b[2]['source'], dst=largest_flows_b[2]['destination']))
+    print('largest flows (duration):')
+    print('{src} -> {dst}'.format(src=largest_flows_d[0]['source'], dst=largest_flows_d[0]['destination']))
+    print('{src} -> {dst}'.format(src=largest_flows_d[1]['source'], dst=largest_flows_d[1]['destination']))
+    print('{src} -> {dst}'.format(src=largest_flows_d[2]['source'], dst=largest_flows_d[2]['destination']))
+
+    plt.show()
